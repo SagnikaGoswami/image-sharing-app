@@ -1,49 +1,58 @@
-// server ko create karna
+const express = require('express')
+const noteModel = require('./models/note.model')
 
-const express = require('express');
+const app = express()
 
-const app = express();
-app.use(express.json());
+app.use(express.json())
 
-// the notes variable is saved inside the RAM,that is why whenever a server is stopped, the data stored inside this array also gets erased
-// This is the reason we require a specified database to store and manage our data
-
-notes = [];
+// note => {title, description}
 
 // create notes
-app.post('/notes', (req, res)=>{
-    console.log(req.body);
-    notes.push(req.body);
+app.post('/notes', async (req, res)=>{
+    
+    const data = req.body
+
+    await noteModel.create({
+        title: data.title,
+        description: data.description
+    })
+
     res.status(201).json({
-        message: "Note created successfully"
+        message: 'Note created successfully.'
     })
 })
 
-// display notes
-app.get('/notes', (req, res)=>{
+// fetch notes
+app.get('/notes', async (req, res) => {
+
+    const notes1 = await noteModel.find()
+    // find returns an array od objects
+
+    const notes2 = await noteModel.findOne({
+        title: 'title 1'
+    })
+    // findOne returns a single object based on the provided condition
+
+    const notes3 = await noteModel.findOne({
+        title: 'title 4'
+    })
+    // if condition does not exist, it returns null
+
+    // we can give condition with the find method also
+    const notes4 = await noteModel.find({
+        title: 'title 2'
+    })
+    // but if the condiitoned object is not present inside the array, it returns an empty array
+
     res.status(200).json({
-        message: "Notes fetched successfully",
-        notes: notes
+        message: 'Notes fetched successfully',
+        notes1: notes1,
+        notes2: notes2,
+        notes3: notes3,
+        notes4: notes4
     })
+
 })
 
-// delete notes
-app.delete('/notes/:index', (req, res) => {
-    const index = req.params.index;
-    console.log(index);
-    delete notes[index];
-    res.status(200).json({
-        message: "Note deleted successfully"
-    })
-})
+module.exports = app
 
-// patch method => to update the data that is stored inside the server
-app.patch('/notes/:index', (req, res) => {
-    const description = req.body.description
-    notes[req.params.index].description = description
-    res.status(200).json({
-        message: 'Note updated successfully'
-    })
-})
-
-module.exports = app;

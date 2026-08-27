@@ -1,5 +1,8 @@
-GET => server se data fetch karna ho tab use karte hain
-POST => server par data send karna ho
-PATCH => server par data already hai aur use data ko update karni hai
-DELETE => server par data hai aur us data ko delete karna hai
+Schema => description of the structure of the data that is being stored in the database
 
+
+CRUD Operations:
+Create - POST => /notes
+Read - GET => /notes/read
+Update - PATCH => /notes/:id
+Delete - DELETE => /notes/:id
